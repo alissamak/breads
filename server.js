@@ -9,6 +9,7 @@ const PORT = process.env.PORT;
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jsx');
 app.engine('jsx', require('express-react-views').createEngine());
+app.use(express.static('public'));
 
 //route
 app.get('/', (req, res) => {
@@ -19,6 +20,13 @@ app.get('/', (req, res) => {
 const breadController = require('./controllers/breads_controller.js')
 app.use('/breads', breadController)
 
+//404 page
+app.get('*', (req, res) => {
+        res.send('404')
+})
+
+//lisent for port number
 app.listen(PORT, () => {
     console.log('nomming at port', PORT);
 });
+
