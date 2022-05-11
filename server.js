@@ -2,6 +2,7 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
+const methodOverride = require('method-override');
 const PORT = process.env.PORT;
 // console.log(PORT);
 
@@ -14,6 +15,8 @@ app.engine('jsx', require('express-react-views').createEngine());
 app.use(express.static('public'));
 //post request middleware
 app.use(express.urlencoded({extended: true}));
+//overridde- delete request middleware
+app.use(methodOverride('_method'));
 
 //route
 app.get('/', (req, res) => {
