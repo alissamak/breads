@@ -20,4 +20,22 @@ module.exports = [
       image: 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1050&q=80',
     }
   ]
+
+//import mongoose
+const mongoose = require("mongoose");
+//append schema to mongoose
+const { Schema } = mongoose;
   
+//build bread schema
+const breadSchema = new Schema({
+  //require field
+  name: {type: String, required: true},
+  hasGluten: Boolean,
+  image: {type: String, default: 'http://placehold.it/500x500.png'},
+})
+
+//create model to house schema and interact with mongoDB
+const Bread = mongoose.model('Bread', breadSchema);
+
+//export model not schema
+module.exports = Bread;
