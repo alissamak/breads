@@ -22,7 +22,7 @@ breads.get('/', (req, res) => {
     // );
 })
 
-//seed data
+//get seed data
 breads.get('/data/seed', (req, res) => {
     Bread.insertMany([
         {
@@ -50,12 +50,16 @@ breads.get('/data/seed', (req, res) => {
     .then(createdBreads => {
         res.redirect('/breads')
     })
+    .catch(err => {
+        res.render('404')
+    })
 })
 
 //create new page
 breads.get('/new', (req, res) => {
     res.render('new')
 })
+
 //post new bread
 breads.post('/', (req, res) => {
     if (!req.body.image) {
@@ -67,8 +71,14 @@ breads.post('/', (req, res) => {
     else{
         req.body.hasGluten = false
     }
-    Bread.create(req.body);
-    res.redirect('/breads');
+    Bread.create(req.body)
+    // res.redirect('/breads');
+        .then(newBread => {
+            res.redirect('/breads');
+        })
+        .catch(err => {
+            res.render('404')
+        })
 })
 
 //edit index of breads
@@ -78,11 +88,14 @@ breads.get('/:indexArray/edit', (req,res) => {
     //     index: req.params.indexArray,
     // })
     Bread.findById(req.params.indexArray)
-    .then(foundBread => {
-        res.render('edit', {
-            bread: foundBread,
+        .then(foundBread => {
+            res.render('edit', {
+                bread: foundBread,
+            })
         })
-    })
+        .catch(err => {
+            res.render('404')
+        })
 })
 
 //show index of breads
@@ -101,6 +114,8 @@ breads.get('/:arrayIndex', (req, res) => {
     // }
     Bread.findById(req.params.arrayIndex)
         .then(foundBread => {
+            const bakedBy = foundBread.getBakedBy()
+            console.log(bakedBy)
             res.render('Show', {
                 bread: foundBread,
             })
@@ -130,10 +145,13 @@ breads.put('/:arrayIndex', (req, res) => {
     }
     // Bread[req.params.arrayIndex] = req.body;
     // res.redirect(`/breads/${req.params.arrayIndex}`)
-    Bread.findByIdAndUpdate(req.params.arrayIndex, req.body, {new: true})
-    .then(updatedBread => {
-        res.redirect(`/breads/${req.params.arrayIndex}`)
-    })
+    Bread.findByIdAndUpdate(req.params.arrayIndex, req.body, {runValidators: true})
+        .then(updatedBread => {
+            res.redirect(`/breads/${req.params.arrayIndex}`)
+        })
+        .catch(err => {
+            res.render('404')
+        })
 })
 
 module.exports = breads;
