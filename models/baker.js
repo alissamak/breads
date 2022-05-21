@@ -13,9 +13,14 @@ const bakerSchema = new Schema({
     },
   startDate: {type: Date, required: true},
   bio: String,
-})
+}, { toJSON: {virtuals: true}})
 
-//helper methods
+//virtuals
+bakerSchema.virtual('breads', {
+    ref: 'Bread',
+    localField: '_id',
+    foreignField: 'baker',
+})
 
 //create model to house schema and interact with mongoDB
 const Baker = mongoose.model('Baker', bakerSchema);
