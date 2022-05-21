@@ -1,6 +1,7 @@
 const express = require('express');
 const breads = express.Router();
-const Bread = require('../models/bread.js')
+const Bread = require('../models/bread.js');
+const Baker = require('../models/baker.js');
 
 //get index of breads
 breads.get('/', (req, res) => {
@@ -57,7 +58,13 @@ breads.get('/data/seed', (req, res) => {
 
 //create new page
 breads.get('/new', (req, res) => {
-    res.render('new')
+    // res.render('new')
+    Baker.find()
+        .then(foundBakers => {
+            res.render('new', {
+                bakers: foundBakers,
+            })
+        })
 })
 
 //post new bread
@@ -87,15 +94,20 @@ breads.get('/:indexArray/edit', (req,res) => {
     //     bread: Bread[req.params.indexArray],
     //     index: req.params.indexArray,
     // })
-    Bread.findById(req.params.indexArray)
-        .then(foundBread => {
-            res.render('edit', {
-                bread: foundBread,
+    Baker.find()
+    .then(foundBakers => {
+        Bread.findById(req.params.indexArray)
+            .then(foundBread => {
+                res.render('edit', {
+                    bread: foundBread,
+                    bakers: foundBakers,
+                })
             })
-        })
-        .catch(err => {
-            res.render('404')
-        })
+            // .catch(err => {
+            //     res.render('404')
+            // })
+    })
+    
 })
 
 //show index of breads
@@ -113,6 +125,7 @@ breads.get('/:arrayIndex', (req, res) => {
     //     res.render('404')
     // }
     Bread.findById(req.params.arrayIndex)
+        .populate('baker')
         .then(foundBread => {
             const bakedBy = foundBread.getBakedBy()
             console.log(bakedBy)
@@ -121,6 +134,7 @@ breads.get('/:arrayIndex', (req, res) => {
             })
         })
         .catch(err => {
+            console.log(err, "error")
             res.render('404')
         })
 })
